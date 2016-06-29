@@ -51,23 +51,13 @@ catch {warn "caught error: $_"; }
   #if PID exists in DB (as _id)
   #if($all[0]) {
   
-    #if it has no children
-     #if(@{$all[0]->{children}}!=0) {
-	#$all_nodes->insert_one( {
-   # "name" => "Joe",
-    #"age" => 52,
-    #"likes" => [qw/skiing math ponies/]
-   # });
-	#}else{
-	#probably forest
-	#print <<ENDHTML;
 #<html>
 #<head>
 #<title>Trees</title>
 #</head>
 #<body>
 #ENDHTML
-  #    print("<h3>I dont have $PID  in DB. If you want forest - go out! <a href='http://127.0.0.1/cgi-bin/tree_manager.pl'>try again</a></h3></body></html> ");  	
+  #    print("<h3>I dont have $PID  in DB. If you want forest - go to the real NATURE:)! <a href='http://127.0.0.1/cgi-bin/tree_manager.pl'>try again</a></h3></body></html> ");  	
 	#}
   
 }else{
