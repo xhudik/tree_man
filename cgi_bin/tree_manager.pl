@@ -39,8 +39,8 @@ my @pp=traverse(([1]));
 #recursive function for printing out the tree
 sub traverse{
   my @ids =@_;
+  #end - if there is nothing else to do
   if($#ids < 0) {return}
-  #print out current depth
   print("<tr>");
   my @next;
   foreach my $row (@ids){
@@ -67,12 +67,11 @@ print("</table>");
 #count new node ID
 my $new_node = $highest + 1;
 
-#forms
+#form
 print <<ENDHTML;
 <form action="/cgi-bin/add.pl" method="get">
 </br></br></br>
- Add node to:  <input type="text" name="PID" value="PID"><br>
- <h3>$new_node==new</h3>
+ Add node to:  <input type="text" name="PID" value="PID"><br/>
  <input type="hidden" name="new_node" value=$new_node>
  <input type="submit" value="Submit">
 </form>
