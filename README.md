@@ -12,8 +12,7 @@ Thus, the program should be able to read them from the database to display the t
 ## Solution
 Since standard relational DBs, like MySQL,  have problems with managing hierarchical data (e.g. [description](]http://mikehillyer.com/articles/managing-hierarchical-data-in-mysql/), 
 or [here](http://stackoverflow.com/questions/5916482/php-mysql-best-tree-structure), we tried to look for a better solution.  [Mongo](https://www.mongodb.com/) as document-oriented database
-seems to be a good candidate to give a try: (https://docs.mongodb.com/manual/applications/data-models-tree-structures/). We have decided to give a try to a bit old-fashioned :) but pretty 
-stable and well-documented [Perl](https://www.perl.org/) 
+seems to be a good candidate to give a try: (https://docs.mongodb.com/manual/applications/data-models-tree-structures/). Then, we picked a bit old-fashioned :) but pretty stable and well-documented [Perl](https://www.perl.org/) as programming languge.
 
 ### Initial steps
 1. Install MongoDB, on Debian: `aptitude install mongodb mongodb-clients`
@@ -38,10 +37,11 @@ db.node.insert({ _id:9,children: [] })
 
 ### Status
 Due to time constraints, the project has not been finished yet. Tree is printed out correctly (recursion function used). Adding new nodes doesnt work. 
-The problem is in these lines:
+The problem is in the folloing lines:
 ```perl
  my $add = $all_nodes->update_one({'_id' => $PID}, {'$push' => {'children' => $new_node }});
  my $new = $all_nodes->insert_one( { '_id' => $new_node, 'children' => [] } );
 ```
-Where we are trying to push a new child ID into parent' node and create a new node. While these lines are working if they are placed in main program `tree_manager.pl`, they do not work
-and do not produce any errors if they are in `add.pl`
+Where we are trying to push a new child ID into parent' node and create a new node. Interesting is that While
+these lines are working fine if they are placed in main program `tree_manager.pl`, they do not work
+and do not produce any errors if they are in `add.pl`...
