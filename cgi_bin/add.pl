@@ -42,6 +42,7 @@ if(looks_like_number($PID)){
   my $res = $all_nodes->find({'_id' => $PID });
   my @all = $res->all;
 try {
+	#NOT WORKING - in main program thes two commands work fine!
   my $add = $all_nodes->update_one({'_id' => $PID}, {'$push' => {'children' => $new_node }});
   my $new = $all_nodes->insert_one( { '_id' => $new_node, 'children' => [] } );
  }
