@@ -18,7 +18,7 @@ print <<ENDHTML;
 <body>
 <h1>Tree Manager</h1>
 <h3>Current tree:</h3>
-<table border="1">
+<br/>
 ENDHTML
 
 #DB connection - 127.0.0.1 by default
@@ -28,58 +28,8 @@ my $db = $client->get_database( 'trees' );
 #pick collection
 my $all_nodes = $db->get_collection( 'node' );
 
-my $tree = $all_nodes->find()
-    #order by  
-    ->sort({ _id => 1 });
 
-my @matrix;
-
-  #pokus DELETEEE
-  #my $add= $all_nodes->update_one({"_id" => 9}, {'$push' => {'children' => 10 }});
-  #my $new = $all_nodes->insert_one( { _id => 13, children => [50,100] } );
-  #print("<h3> new---$new");
-  #ENDDD
-
-#print tree
-while (my $node = $tree->next) {
-  #node - how many children 
-  my $nchildren = @{$node->{children}};
-  
-  my @row;
-  print("<tr><td>Node:".$node->{_id}." </td>");
-  foreach my $child (@{$node->{children}}){
-    push(@row,$child);
-    print("<td>$child</td>");
-  }
-  
-#print("_id=".$node->{ '_id' }.";; children=".$children[0][0].";;;ref=".ref($node->{children}));
-#print("AA children=".$node->{children}.";;;ref=".ref($node->{children}));
-#print("node->children=".$node->{children}.";".@{$node->{children}}.";;size=".@{$node->{children}}.";1.st elem".$node->{children}[0]);
-
-#print("[pid=".$node{'pid'}.";id=".$node{'id'}.']');
-    #while(my ($k,$v)=each $node)
-#	{print "$k => $v ;;"
-#	}
-   push(@matrix, \@row);
-  print("</tr>");
-}
-
-
-print("</table><br/><table  border='1'>");
-my $level = 1;
-foreach my $row1 (@matrix){
-  print("<tr><td>Level ".$level++."</td>");
-  #my @columns = @{$matrix[$row]};
-  foreach my $column (@$row1){
-  #foreach my $column (@columns){
-    print("<td>$column</td>");
-  }
-  print("</tr>");
-}
-print("</table><br/>");
-
-
-#creating levels
+#PRINTING TREE
 print("<table  border='1' style='width:100%'>");
 #highest ID
 my $highest = 1;
