@@ -52,7 +52,7 @@ sub traverse{
 	}
       my $res = $all_nodes->find({'_id' => $id });
       my @all = $res->all;
-      #if node exists and has children - push them
+      #if node exists and has children - push the new row
       if((@all)&&(@{$all[0]->{children}}!=0)) {
 	push(@next,$all[0]->{children});
       }
