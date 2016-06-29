@@ -2,16 +2,18 @@
 ###### Please note: this is only a use case. Currently not working!
 
 ## Summary
+The solution is implemented in MongoDB and PERL. We followed [tree structure with children references](https://docs.mongodb.com/manual/tutorial/model-tree-structures-with-child-references/),
+since is it should be slightly faster than standard [tree with parent reference] (https://docs.mongodb.com/manual/tutorial/model-tree-structures-with-parent-references/) and still relatively easy to implement. Currently, we are having problem with adding new nodes.
 
 ## Requirements
-The task is to write a web based application that allows a user to view an existing, initially empty, tree and add nodes to it.Tree nodes should be stored in the MySQL database. 
-Thus, your program should be able to read them from the database to display the tree, and add new nodes to the tree upon user request.  Further, code should easily re-usable. 
-Try to think out of the box and try to "over engineer".
+The task was to write a web based application that allows a user to view an existing, initially empty, tree and add nodes to it.Tree nodes should be stored in the MySQL database. 
+Thus, the program should be able to read them from the database to display the tree, and add new nodes to the tree upon a user request.  Further, code should easily re-usable there should be thinking out of the box and trying to "over engineer".
 
 ## Solution
 Since standard relational DBs, like MySQL,  have problems with managing hierarchical data (e.g. [description](]http://mikehillyer.com/articles/managing-hierarchical-data-in-mysql/), 
 or [here](http://stackoverflow.com/questions/5916482/php-mysql-best-tree-structure), we tried to look for a better solution.  [Mongo](https://www.mongodb.com/) as document-oriented database
-seems to be a good candidate to try. We have decided to give a try to a bit old-fashioned :) but pretty stable and well-documented [Perl](https://www.perl.org/) 
+seems to be a good candidate to give a try: (https://docs.mongodb.com/manual/applications/data-models-tree-structures/). We have decided to give a try to a bit old-fashioned :) but pretty 
+stable and well-documented [Perl](https://www.perl.org/) 
 
 ### Initial steps
 1. Install MongoDB, on Debian: `aptitude install mongodb mongodb-clients`
