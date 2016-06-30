@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 #redirect errors to webbrowser - switch off!!!
-use CGI::Carp 'fatalsToBrowser';
+use CGI::Carp qw(fatalsToBrowser warningsToBrowser); 
 use MongoDB;
 use Data::Dumper;
 use Scalar::Util qw(looks_like_number);
@@ -27,8 +27,9 @@ foreach $pair (@pairs){
   $FORM{$name} = $value;
   }   
 
-my $PID = $FORM{PID};
-my $new_node = $FORM{new_node};
+#stupid non-typed language needs to do math operation to be sure a variable is int (not string)
+my $PID = $FORM{PID} +0 ;
+my $new_node = $FORM{new_node} +0;
 
 #MAIN PROGRAM
 #check the insterted number (PID)
@@ -39,10 +40,31 @@ if(looks_like_number($PID)){
   my $db = $client->get_database( 'trees' );
   #pick collection
   my $all_nodes = $db->get_collection( 'node' );
+
+  #if parent node doesnt exists in DB - exit
+  my $pnode = $all_nodes->find_id($PID);
+  if(! $pnode){
+    #probably forest
+    #INITIAL HTML PART
+    print "Content-type: text/html\n\n";
+    #be careful - remove all white spaces
+    print <<ENDHTML;
+<html>
+<head>
+<title>Trees</title>
+</head>
+<body>
+ENDHTML
+    print("<h3>I dont have $PID  in DB. If you want forest - go to the nature! <a href='http://127.0.0.1/cgi-bin/tree_manager.pl'>Here, we are working with one tree only</a></h3></body></html> ");  
+    exit(20);
+   }
+
   my $res = $all_nodes->find({'_id' => $PID });
   my @all = $res->all;
 try {
-  my $add = $all_nodes->update_one({'_id' => $PID}, {'$push' => {'children' => $new_node }});
+ #warn("update PID(_id)=$PID;; elem:$new_node   =new node;;ref(PID=".ref($PID).";;ref(new=".ref($new_node)."kkk");
+  #my $add = $all_nodes->update_one({'_id' => $PID}, {'$push' => {children => $new_node }});
+  my $add = $all_nodes->update_one({'_id' => $PID}, {'$push' => {children => $new_node }});
   my $new = $all_nodes->insert_one( { '_id' => $new_node, 'children' => [] } );
  }
 catch {warn "caught error: $_"; }

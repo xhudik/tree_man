@@ -2,9 +2,11 @@
 use strict;
 use warnings;
 #redirect errors to webbrowser - switch off!!!
-use CGI::Carp 'fatalsToBrowser';
+use CGI::Carp qw(fatalsToBrowser warningsToBrowser); 
 use MongoDB;
 use Data::Dumper;
+use Try::Tiny;
+use Safe::Isa;
 
 
 #INITIAL HTML PART
@@ -28,61 +30,60 @@ my $db = $client->get_database( 'trees' );
 #pick collection
 my $all_nodes = $db->get_collection( 'node' );
 
-my $tree = $all_nodes->find()
+
+#if init tree with node ID=1 doesnt exists - create it
+my $init_tree = $all_nodes->find_id(1);
+if(! $init_tree){
+  try {
+  $all_nodes->insert_one( { '_id' => 1, 'children' => [] } );
+ }
+catch {warn "caught error: $_"; }
+  }
+
+
+####TH DEBUGGING START####
+#my $tree = $all_nodes->find({ _id => 1 })
     #order by  
-    ->sort({ _id => 1 });
-
-my @matrix;
-
-  #pokus DELETEEE
-  #my $add= $all_nodes->update_one({"_id" => 9}, {'$push' => {'children' => 10 }});
-  #my $new = $all_nodes->insert_one( { _id => 13, children => [50,100] } );
-  #print("<h3> new---$new");
-  #ENDDD
-
-#print tree
-while (my $node = $tree->next) {
+   # ->sort({ _id => 1 });
+#my @matrix;
+  
+#print nodes
+#while (my $node = $tree->next) {
   #node - how many children 
-  my $nchildren = @{$node->{children}};
+#  my $nchildren = @{$node->{children}};
   
-  my @row;
-  print("<tr><td>Node:".$node->{_id}." </td>");
-  foreach my $child (@{$node->{children}}){
-    push(@row,$child);
-    print("<td>$child</td>");
-  }
+#  my @row;
+#  print("<tr><td>Node:".$node->{_id}." </td>");
+ # foreach my $child (@{$node->{children}}){
+ #   push(@row,$child);
+ #   print("<td>$child</td>");
+#  }
   
-#print("_id=".$node->{ '_id' }.";; children=".$children[0][0].";;;ref=".ref($node->{children}));
-#print("AA children=".$node->{children}.";;;ref=".ref($node->{children}));
-#print("node->children=".$node->{children}.";".@{$node->{children}}.";;size=".@{$node->{children}}.";1.st elem".$node->{children}[0]);
-
-#print("[pid=".$node{'pid'}.";id=".$node{'id'}.']');
-    #while(my ($k,$v)=each $node)
-#	{print "$k => $v ;;"
-#	}
-   push(@matrix, \@row);
-  print("</tr>");
-}
+#   push(@matrix, \@row);
+#  print("</tr>");
+#}
 
 
-print("</table><br/><table  border='1'>");
-my $level = 1;
-foreach my $row1 (@matrix){
-  print("<tr><td>Level ".$level++."</td>");
-  #my @columns = @{$matrix[$row]};
-  foreach my $column (@$row1){
-  #foreach my $column (@columns){
-    print("<td>$column</td>");
-  }
-  print("</tr>");
-}
-print("</table><br/>");
+#print("</table><br/><table  border='1'>");
+#my $level = 1;
+#foreach my $row1 (@matrix){
+#  print("<tr><td>Level ".$level++."</td>");
+#  #my @columns = @{$matrix[$row]};
+#  foreach my $column (@$row1){
+ # #foreach my $column (@columns){
+#    print("<td>$column</td>");
+#  }
+#  print("</tr>");
+#}
+#print("</table><br/>");
 
+####TH DEBUGGING END####
 
-#creating levels
-print("<table  border='1' style='width:100%'>");
+#printing tree
+print("<table  border='1' style='width:100%'><tr><th>Depth</th><th>Tree nodes</th></tr>");
 #highest ID
 my $highest = 1;
+my $depth = 0; 
 my @pp=traverse(([1]));
 
 
@@ -91,10 +92,10 @@ sub traverse{
   my @ids =@_;
   if($#ids < 0) {return}
   #print out current depth
-  print("<tr>");
+  print("<tr><td>".$depth++."</td><td>");
   my @next;
   foreach my $row (@ids){
-    print(" <td>");
+    print(" ");
     foreach my $id (@$row){
       print("[",$id."] ");
       if($id>$highest){
@@ -102,14 +103,14 @@ sub traverse{
 	}
       my $res = $all_nodes->find({'_id' => $id });
       my @all = $res->all;
-      #if node exists and has children - push them
+      #if node exists and has children - push the new node
       if((@all)&&(@{$all[0]->{children}}!=0)) {
 	push(@next,$all[0]->{children});
       }
     }
-    print("</td>");
+    print("|");
   }  
-  print("</tr>");
+  print("</td></tr>");
   traverse(@next);
 }
 print("</table>");
@@ -122,7 +123,6 @@ print <<ENDHTML;
 <form action="/cgi-bin/add.pl" method="get">
 </br></br></br>
  Add node to:  <input type="text" name="PID" value="PID"><br>
- <h3>$new_node==new</h3>
  <input type="hidden" name="new_node" value=$new_node>
  <input type="submit" value="Submit">
 </form>
